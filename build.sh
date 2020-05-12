@@ -22,9 +22,14 @@ cd ../plots
 while read -r line; do
     ver_num="$line"
 done < "../data/vernum.txt"
-long_ver_num=${ver_num: -6}
+long_ver_num="000000${ver_num}"
+long_ver_num=${long_ver_num: -6}
 cp julia_annotated.png julia_annotated_${long_ver_num}.png
 
 # Set wallpaper
 cp julia_annotated.png /usr/local/share/wallpapers/wallpaper.png
 bash /home/will/.fehbg
+
+# Update version number
+new_ver_num=$(($ver_num + 1))
+echo $new_ver_num > ../data/vernum.txt

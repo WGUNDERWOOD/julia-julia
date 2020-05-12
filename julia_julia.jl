@@ -72,8 +72,7 @@ function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, 
             markersize = 0.2,
             markershape = :circle,
             markerstrokewidth = 0,
-            #size = (2560, 1440),
-            size = (256, 144),
+            size = (2560, 1440),
             axis = nothing,
             border = :none,
             legend = nothing,
@@ -131,13 +130,11 @@ function get_c_value()
 end
 
 
-#max_iters = 10000000
-max_iters = 100
+max_iters = 10000000
 min_depth = 20
 max_depth = 20000
 max_deriv = 10000
-#min_points = 50000
-min_points = 50
+min_points = 50000
 
 println("Starting Julia set plot...")
 gr()
@@ -165,13 +162,5 @@ col_string = string("\\definecolor{fgcolor}{HTML}{", col_string, "}")
 io = open("data/color.txt", "w")
 println(io, col_string)
 close(io)
-
-# write version number
-ver_num = ver_num + 1
-ver_num = string(ver_num)
-io = open("data/vernum.txt", "w")
-write(io, ver_num)
-close(io)
-
 
 println("Finished Julia set plot.")
