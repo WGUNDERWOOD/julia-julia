@@ -1,4 +1,4 @@
 references/
 precompile_plot.jl
 sys_plots.so
-julia_set.png
+*.png

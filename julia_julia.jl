@@ -1,6 +1,7 @@
 using Revise
 using Random
 using Plots
+using Dates
 
 
 function make_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
@@ -31,7 +32,19 @@ function make_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
         n = n + 1
     end
 
-    return plot_points
+    return unique(round_complex.(plot_points, 3))
+end
+
+
+function round_complex(z, digits)
+
+    x = real(z)
+    y = imag(z)
+    xr = trunc.(x, digits = digits)
+    yr = trunc.(y, digits = digits)
+    zr = xr + yr * im
+
+    return zr
 end
 
 
@@ -39,17 +52,19 @@ function plot_julia_set(n_iters, min_depth, max_depth, max_deriv)
 
 
     n_points = 0
-    while n_points <= 500000
+    while n_points <= 100000
         global c = get_c_value()
         global points = make_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
         n_points = length(points)
+        println("Found ", n_points, " points...")
     end
-
-    println(c)
-    println(string("Plotting ", n_points, " points..."))
 
     points_real = real(points)
     points_imag = imag(points)
+
+    rand_red = 0.4 * (rand() + 0.1)
+    rand_green = 0.4 * (rand() + 0.1)
+    rand_blue = 0.4 * (rand() + 0.1)
 
     scatter(points_real,
             points_imag,
@@ -61,10 +76,11 @@ function plot_julia_set(n_iters, min_depth, max_depth, max_deriv)
             border = :none,
             legend = nothing,
             aspect_ratio = :equal,
-            color = RGBA(0.2, 0.18, 0.25, 0.8),
+            color = RGBA(rand_red, rand_green, rand_blue, 0.8),
             background_color = RGB(0, 0, 0)
     )
 
+    # make lower border larger for use as wallpaper
     scatter!([minimum(points_real)],
             [minimum(points_imag) - 0.05],
             color = RGB(0, 0, 0),
@@ -72,39 +88,31 @@ function plot_julia_set(n_iters, min_depth, max_depth, max_deriv)
             markerstrokewidth = 0
     )
 
-    savefig("./julia_set.png")
+    global filename = string("./plots/julia_set", Dates.now(), ".png")
+    savefig(filename)
 end
 
 
 
 function get_c_value()
 
-    zs = [
-        0.7 * im,
-        -0.8 + 0.2 * im,
-        0.4 + 0.4 * im,
-        -1.3 + 0.2 * im,
-        -0.8 * im,
-        0.1 + 0.6 * im,
-        0.1 + 0.2 * im
-    ]
+    c = 0
+    while (abs(c) > 2) | (abs(c) < 0.2)
+        c = 4*(-0.5 - 0.5 * im + rand() + rand() * im)
+    end
 
-    ind = rand(1:length(zs))
-
-    jitter = 2*(-0.5 - 0.5 * im + rand() + rand() * im)
-    c = zs[ind] + jitter / 5
-
+    println("c = ", round_complex(c, 3))
     return c
-
 end
 
 
 n_iters = 1000000
 min_depth = 20
-max_depth = 100
-max_deriv = 5000
+max_depth = 5000
+max_deriv = 10000
 
 println("Starting Julia set plot...")
 gr()
 plot_julia_set(n_iters, min_depth, max_depth, max_deriv)
+cp(filename, "./plots/julia_set.png", force = true)
 println("Finished Julia set plot.")
