@@ -35,9 +35,18 @@ function make_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
 end
 
 
-function plot_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
+function plot_julia_set(n_iters, min_depth, max_depth, max_deriv)
 
-    points = make_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
+
+    n_points = 0
+    while n_points <= 500000
+        global c = get_c_value()
+        global points = make_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
+        n_points = length(points)
+    end
+
+    println(c)
+    println(string("Plotting ", n_points, " points..."))
 
     points_real = real(points)
     points_imag = imag(points)
@@ -45,15 +54,22 @@ function plot_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
     scatter(points_real,
             points_imag,
             markersize = 0.2,
-            markershape=:circle,
-            markerstrokewidth=0,
+            markershape = :circle,
+            markerstrokewidth = 0,
             size = (2560, 1440),
             axis = nothing,
             border = :none,
             legend = nothing,
             aspect_ratio = :equal,
-            color = RGBA(0.9, 0.9, 0.9, 0.5),
-            background_color = RGB(0.1, 0.1, 0.1)
+            color = RGBA(0.2, 0.18, 0.25, 0.8),
+            background_color = RGB(0, 0, 0)
+    )
+
+    scatter!([minimum(points_real)],
+            [minimum(points_imag) - 0.05],
+            color = RGB(0, 0, 0),
+            markersize = 0,
+            markerstrokewidth = 0
     )
 
     savefig("./julia_set.png")
@@ -66,7 +82,7 @@ function get_c_value()
     zs = [
         0.7 * im,
         -0.8 + 0.2 * im,
-        0.4 + 0.3 * im,
+        0.4 + 0.4 * im,
         -1.3 + 0.2 * im,
         -0.8 * im,
         0.1 + 0.6 * im,
@@ -76,20 +92,19 @@ function get_c_value()
     ind = rand(1:length(zs))
 
     jitter = 2*(-0.5 - 0.5 * im + rand() + rand() * im)
-    c = zs[ind] + jitter / 10
+    c = zs[ind] + jitter / 5
 
     return c
 
 end
 
-gr()
-c = get_c_value()
 
 n_iters = 1000000
 min_depth = 20
 max_depth = 100
-max_deriv = 500
+max_deriv = 5000
 
-println("Starting plot...")
-plot_julia_set(c, n_iters, min_depth, max_depth, max_deriv)
-println("Finished plot.")
+println("Starting Julia set plot...")
+gr()
+plot_julia_set(n_iters, min_depth, max_depth, max_deriv)
+println("Finished Julia set plot.")
