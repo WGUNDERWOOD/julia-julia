@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 freq=3600
-#freq=86400
 
 cd "$(dirname "$0")"
 
@@ -36,5 +35,5 @@ while true; do
     fi
 
     # Try again soon
-    sleep 10
+    sleep 60
 done
