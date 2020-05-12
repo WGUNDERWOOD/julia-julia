@@ -2,3 +2,10 @@ references/
 precompile_plot.jl
 sys_plots.so
 *.png
+data
+*.aux
+*.fdb_latexmk
+*.fls
+*.pdf
+*.log
+auto
