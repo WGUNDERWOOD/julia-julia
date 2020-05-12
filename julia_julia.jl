@@ -95,6 +95,29 @@ end
 
 
 
+function format_latex(c)
+
+    x = real(c)
+    y = imag(c)
+
+    xstr = string(abs(x) + 0.0005, "00000")[1:5]
+    ystr = string(abs(y) + 0.0005, "00000")[1:5]
+
+    if (sign(x) < 0) & (xstr != "0.000")
+        xstr = string("-", xstr)
+    end
+
+    if sign(y) >= 0
+        latex_str = string("c = ", xstr, " + ", ystr, "\\,i")
+    else
+        latex_str = string("c = ", xstr, " - ", ystr, "\\,i")
+    end
+
+    return latex_str
+end
+
+
+
 function get_c_value()
 
     c = 0
@@ -110,7 +133,7 @@ max_iters = 10000000
 min_depth = 20
 max_depth = 20000
 max_deriv = 10000
-min_points = 100000
+min_points = 50000
 
 println("Starting Julia set plot...")
 gr()
@@ -122,22 +145,7 @@ plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points)
 cp(filename, "./julia_set.png", force = true)
 
 # save c parameter
-cx = trunc(real(c), digits = 3)
-cy = trunc(imag(c), digits = 3)
-
-if cx == 0
-    cx = -cx
-end
-
-if cy == 0
-    cy = -cy
-end
-
-if cy >= 0
-    c_label = string("c = ", cx, " + ", cy, "\\,i")
-else
-    c_label = string("c = ", cx, " - ", -cy, "\\,i")
-end
+c_label = format_latex(c)
 
 io = open("data/c.txt", "w")
 println(io, c_label)
