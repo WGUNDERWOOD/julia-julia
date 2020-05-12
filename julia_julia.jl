@@ -47,7 +47,7 @@ function round_complex(z, digits)
 end
 
 
-function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points)
+function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, ver_num)
 
 
     n_points = 0
@@ -72,7 +72,8 @@ function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points)
             markersize = 0.2,
             markershape = :circle,
             markerstrokewidth = 0,
-            size = (2560, 1440),
+            #size = (2560, 1440),
+            size = (256, 144),
             axis = nothing,
             border = :none,
             legend = nothing,
@@ -89,7 +90,8 @@ function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points)
             markerstrokewidth = 0
     )
 
-    global filename = string("./plots/julia_set", Dates.now(), ".png")
+    global long_ver_num = string("000000", ver_num)[end-5:end]
+    global filename = string("./plots/julia_set_", long_ver_num, ".png")
     savefig(filename)
 end
 
@@ -129,24 +131,30 @@ function get_c_value()
 end
 
 
-max_iters = 10000000
+#max_iters = 10000000
+max_iters = 100
 min_depth = 20
 max_depth = 20000
 max_deriv = 10000
-min_points = 50000
+#min_points = 50000
+min_points = 50
 
 println("Starting Julia set plot...")
 gr()
 
+# read version number
+io = open("data/vernum.txt", "r")
+ver_num = parse(Int, read(io, String))
+close(io)
+
 # save plot
-plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points)
+plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, ver_num)
 
 # copy to current version
-cp(filename, "./julia_set.png", force = true)
+cp(filename, "./plots/julia_set.png", force = true)
 
 # save c parameter
 c_label = format_latex(c)
-
 io = open("data/c.txt", "w")
 println(io, c_label)
 close(io)
@@ -156,11 +164,6 @@ col_string = hex(fg_color, :rrggbb)
 col_string = string("\\definecolor{fgcolor}{HTML}{", col_string, "}")
 io = open("data/color.txt", "w")
 println(io, col_string)
-close(io)
-
-# read version number
-io = open("data/vernum.txt", "r")
-ver_num = parse(Int, read(io, String))
 close(io)
 
 # write version number
