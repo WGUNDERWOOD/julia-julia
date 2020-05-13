@@ -27,10 +27,9 @@ long_ver_num=${long_ver_num: -6}
 cp julia_annotated.png julia_annotated_${long_ver_num}.png
 
 # Set wallpaper
-if [ -d "/usr/local/share/wallpapers/wallpaper" ]; then
-    cp julia_annotated.png /usr/local/share/wallpapers/wallpaper.png
-    bash /home/will/.fehbg
-fi
+echo "Setting wallpaper..."
+cp julia_annotated.png /usr/local/share/wallpapers/wallpaper.png
+bash /home/will/.fehbg
 
 # Update version number
 new_ver_num=$(($ver_num + 1))
