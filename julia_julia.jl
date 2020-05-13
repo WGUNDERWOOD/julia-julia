@@ -62,9 +62,9 @@ function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, 
     points_real = real(points)
     points_imag = imag(points)
 
-    rand_red = 0.4 * rand() + 0.2
-    rand_green = 0.4 * rand() + 0.2
-    rand_blue = 0.4 * rand() + 0.2
+    rand_red = 0.4 * rand() + 0.3
+    rand_green = 0.4 * rand() + 0.3
+    rand_blue = 0.4 * rand() + 0.3
     global fg_color = RGBA(rand_red, rand_green, rand_blue, 0.9)
 
     scatter(points_real,
