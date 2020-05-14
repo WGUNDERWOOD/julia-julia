@@ -2,6 +2,12 @@
 
 cd "$(dirname "$0")"
 
+# Make directories and data files
+mkdir -p plots
+mkdir -p data
+[[ -f data/vernum.txt ]] || echo 1 > data/vernum.txt
+
+
 # Run Julia script
 if [ -f "sys_plots.so" ]; then
     echo "Using Julia sysimage for fast plotting..."
@@ -25,11 +31,6 @@ done < "../data/vernum.txt"
 long_ver_num="000000${ver_num}"
 long_ver_num=${long_ver_num: -6}
 cp julia_annotated.png julia_annotated_${long_ver_num}.png
-
-# Set wallpaper
-echo "Setting wallpaper..."
-cp julia_annotated.png /usr/local/share/wallpapers/wallpaper.png
-bash /home/will/.fehbg
 
 # Update version number
 new_ver_num=$(($ver_num + 1))
