@@ -28,6 +28,12 @@ function make_julia_set(c, max_iters, min_depth, max_depth, max_deriv)
             append!(points, point_new_2)
 
         end
+
+        if (n % 100000 == 0)
+            println("Iteration number: ", n)
+            println("Points remaining: ", length(points))
+        end
+
         n = n + 1
     end
 
@@ -53,10 +59,10 @@ function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, 
     n_points = 0
     while n_points <= min_points
         global c = get_c_value()
-        println("c = ", round_complex(c, 3))
+        println("\nTrying c = ", round_complex(c, 3))
         global points = make_julia_set(c, max_iters, min_depth, max_depth, max_deriv)
         n_points = length(points)
-        println("Found ", n_points, " points...")
+        println("Found ", n_points, " points")
     end
 
     points_real = real(points)
@@ -132,7 +138,7 @@ end
 
 max_iters = 10000000
 min_depth = 20
-max_depth = 20000
+max_depth = 50000
 max_deriv = 10000
 min_points = 50000
 
