@@ -31,13 +31,12 @@ function make_julia_set(c, max_iters, min_depth, max_depth, max_deriv)
 
         if (n % 100000 == 0)
             println("Iteration number: ", n)
-            println("Points remaining: ", length(points))
         end
 
         n = n + 1
     end
 
-    return unique(round_complex.(plot_points, 3))
+    return unique(round_complex.(plot_points, 4))
 end
 
 
@@ -75,7 +74,7 @@ function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, 
 
     scatter(points_real,
             points_imag,
-            markersize = 0.2,
+            markersize = 0.1,
             markershape = :circle,
             markerstrokewidth = 0,
             size = (2560, 1440),
@@ -136,11 +135,11 @@ function get_c_value()
 end
 
 
-max_iters = 10000000
+max_iters = 100000000
 min_depth = 20
 max_depth = 50000
 max_deriv = 10000
-min_points = 50000
+min_points = 500000
 
 println("Starting Julia set plot...")
 gr()
