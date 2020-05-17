@@ -7,4 +7,4 @@ bash ./build.sh
 echo "Setting wallpaper..."
 cp ./plots/julia_annotated.png /usr/local/share/wallpapers/wallpaper.png
 sleep 1
-bash ~/.fehbg
+bash ~/scripts/set-wallpaper
