@@ -4,8 +4,15 @@ using Images
 
 function normalise(i, j, nx, ny, r)
 
-    x = (i * 2 * r / nx) - r
-    y = (j * 2 * r / ny) - r
+    x_scaling = 2 * r / nx
+    y_scaling = 2 * r / ny
+    scaling = max(x_scaling, y_scaling)
+
+    x_offset = scaling * nx / 2
+    y_offset = scaling * ny / 2
+
+    x = i * scaling - x_offset
+    y = j * scaling - y_offset
 
     return x + im * y
 end
@@ -75,8 +82,8 @@ function iterate_points(points, escape_times, nx, ny, c, r, max_iter)
             end
         end
 
-        if i % 100 == 0
-            println("Rendered ", i, " of ", ny, " lines")
+        if (i % 100 == 0)
+            println("Rendered ", i, " of ", nx, " lines...")
         end
     end
     return escape_times
@@ -88,11 +95,11 @@ function format_color(x)
 
     ni = size(x)[1]
     nj = size(x)[2]
-    f_x = Array{RGB{Float64}}(undef, nx, ny)
+    f_x = Array{RGB{Float64}}(undef, ni, nj)
 
-    rand_red = 0.4 * rand() + 0.3
-    rand_green = 0.4 * rand() + 0.3
-    rand_blue = 0.4 * rand() + 0.3
+    rand_red = 0.4 * rand() + 0.4
+    rand_green = 0.4 * rand() + 0.4
+    rand_blue = 0.4 * rand() + 0.4
 
     global fg_color = RGB(rand_red, rand_green, rand_blue)
 
@@ -142,10 +149,11 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     points, escape_times = init_points(nx, ny, r)
     escape_times = iterate_points(points, escape_times, nx, ny, c, r, max_iter)
     n_interesting_points = sum(max_iter / 4 .<= escape_times .<= 3 * max_iter / 4)
-    println("Found ", n_interesting_points, " interesting points")
+    println("\nFound ", n_interesting_points, " interesting points")
 
     f_escape_times = format_escape_times(escape_times)
 
+    println("Saving image file...")
     save(filename, f_escape_times)
 end
 
@@ -186,9 +194,9 @@ long_ver_num = string("000000", ver_num)[end-5:end]
 filename = string("./plots/julia_set_", long_ver_num, ".png")
 
 # save plot
-const nx = 1500
-const ny = 1500
-const max_iter = 100
+const nx = 2560
+const ny = 1440
+const max_iter = 200
 julia_plot(nx, ny, max_iter, long_ver_num, filename)
 
 # copy to current version
