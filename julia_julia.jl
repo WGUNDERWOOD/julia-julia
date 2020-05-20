@@ -94,30 +94,22 @@ end
 
 
 
-function curve_values(vals, x, y)
+function curve_values(vals, l)
 
     ni = size(vals)[1]
     nj = size(vals)[2]
-    c_x = Array{Float64}(undef, ni, nj)
+    c_vals = Array{Float64}(undef, ni, nj)
 
-    xv = x * maximum(vals)
-    yv = x * maximum(vals)
-
-    m1 = y / x
-    m2 = (1-y) / (1-x)
+    m = maximum(vals)
 
     for i = 1:ni
         for j = 1:nj
 
-            if vals[i, j] <= xv
-                c_x[i, j] = m1 * vals[i, j]
-            else
-                c_x[i, j] = m2 * (vals[i, j] - xv) + yv
-            end
+            c_vals[i, j] = 1 - exp(-l * vals[i, j] / m)
         end
     end
 
-    return c_x
+    return c_vals
 end
 
 
@@ -153,7 +145,7 @@ end
 function format_escape_times(escape_times)
 
     f_escape_times = transpose(escape_times)
-    f_escape_times = curve_values(f_escape_times, 0.5, 0.9)
+    f_escape_times = curve_values(f_escape_times, 2)
     f_escape_times /= maximum(f_escape_times)
     f_escape_times = format_color(f_escape_times)
 
@@ -229,7 +221,7 @@ filename = string("./plots/julia_set_", long_ver_num, ".png")
 # save plot
 const nx = 2560
 const ny = 1440
-const max_iter = 500
+const max_iter = 1000
 julia_plot(nx, ny, max_iter, long_ver_num, filename)
 
 # copy to current version
