@@ -11,8 +11,10 @@ function normalise(i, j, nx, ny, r)
     x_offset = scaling * nx / 2
     y_offset = scaling * ny / 2
 
+    y_adjust = y_offset / 40
+
     x = i * scaling - x_offset
-    y = j * scaling - y_offset
+    y = j * scaling - y_offset + y_adjust
 
     return x + im * y
 end
@@ -149,7 +151,7 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     points, escape_times = init_points(nx, ny, r)
     escape_times = iterate_points(points, escape_times, nx, ny, c, r, max_iter)
     n_interesting_points = sum(max_iter / 4 .<= escape_times .<= 3 * max_iter / 4)
-    println("\nFound ", n_interesting_points, " interesting points")
+    println("\nFound ", n_interesting_points," / ", nx * ny, " interesting points")
 
     f_escape_times = format_escape_times(escape_times)
 
