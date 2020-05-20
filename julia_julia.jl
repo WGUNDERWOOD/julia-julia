@@ -170,7 +170,7 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     max_iter_small = 100
 
     println("Finding a good value for c...")
-    while n_interesting_points <= nx_small * ny_small / 10
+    while n_interesting_points <= nx_small * ny_small / 20
         global c = get_c()
         global r = get_r(c)
         points, escape_times = init_points(nx_small, ny_small, r)
