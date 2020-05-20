@@ -1,102 +1,152 @@
-using Revise
-using Random
-using Plots
-using Dates
+using Images
 
-function make_julia_set(c, max_iters, min_depth, max_depth, max_deriv)
 
-    n = 1
-    points = [Dict([("z", 0 + 0*im), ("depth", 0), ("deriv", 1)])]
-    plot_points = Complex[]
 
-    while (n <= max_iters) & (length(points) != 0)
-        point = pop!(points)
+function normalise(i, j, nx, ny, r)
 
-        if point["depth"] >= min_depth
-            append!(plot_points, point["z"])
-        end
+    x = (i * 2 * r / nx) - r
+    y = (j * 2 * r / ny) - r
 
-        if (point["depth"] <= max_depth) & (point["deriv"] <= max_deriv)
-
-            z_new = sqrt(point["z"] - c)
-            depth_new = point["depth"] + 1
-            deriv_new = 2 * point["deriv"] * abs(z_new)
-            point_new_1 = [Dict([("z", z_new), ("depth", depth_new), ("deriv", deriv_new)])]
-            point_new_2 = [Dict([("z", -z_new), ("depth", depth_new), ("deriv", deriv_new)])]
-
-            append!(points, point_new_1)
-            append!(points, point_new_2)
-
-        end
-
-        if (n % 100000 == 0)
-            println("Iteration number: ", n)
-        end
-
-        n = n + 1
-    end
-
-    return unique(round_complex.(plot_points, 4))
+    return x + im * y
 end
 
 
-function round_complex(z, digits)
 
-    x = real(z)
-    y = imag(z)
-    xr = trunc.(x, digits = digits)
-    yr = trunc.(y, digits = digits)
-    zr = xr + yr * im
+function get_c()
 
-    return zr
+    c = 4 * (-0.5 - 0.5 * im + rand() + rand() * im)
+
+    return c
 end
 
 
-function plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, ver_num)
+
+function get_r(c)
+
+    r = 0.5 * (1 + sqrt(1 + 4 * abs(c)))
+
+    return r
+end
 
 
-    n_points = 0
-    while n_points <= min_points
-        global c = get_c_value()
-        println("\nTrying c = ", round_complex(c, 3))
-        global points = make_julia_set(c, max_iters, min_depth, max_depth, max_deriv)
-        n_points = length(points)
-        println("Found ", n_points, " points")
+
+function init_points(nx, ny, r)
+
+    points = Array{Complex}(undef, nx, ny)
+    escape_times = Array{Int}(undef, nx, ny)
+
+    for i = 1:nx
+        for j = 1:ny
+
+            z = normalise(i, j, nx, ny, r)
+            points[i, j] = z
+
+            if abs(z) <= r
+                escape_times[i, j] = max_iter
+            else
+                escape_times[i, j] = 0
+            end
+        end
     end
 
-    points_real = real(points)
-    points_imag = imag(points)
+    return [points, escape_times]
+end
+
+
+
+function iterate_points(points, escape_times, nx, ny, c, r, max_iter)
+
+    for i = 1:nx
+        for j = 1:ny
+
+            n = 1
+            while n <= max_iter
+
+                z = points[i, j]
+
+                if abs(z) <= r
+                    points[i, j] = z^2 + c
+                else
+                    escape_times[i, j] = n
+                    break
+                end
+
+                n += 1
+            end
+        end
+
+        if i % 100 == 0
+            println("Rendered ", i, " of ", ny, " lines")
+        end
+    end
+    return escape_times
+end
+
+
+
+function format_color(x)
+
+    ni = size(x)[1]
+    nj = size(x)[2]
+    f_x = Array{RGB{Float64}}(undef, nx, ny)
 
     rand_red = 0.4 * rand() + 0.3
     rand_green = 0.4 * rand() + 0.3
     rand_blue = 0.4 * rand() + 0.3
-    global fg_color = RGBA(rand_red, rand_green, rand_blue, 0.9)
 
-    scatter(points_real,
-            points_imag,
-            markersize = 0.1,
-            markershape = :circle,
-            markerstrokewidth = 0,
-            size = (2560, 1440),
-            axis = nothing,
-            border = :none,
-            legend = nothing,
-            aspect_ratio = :equal,
-            color = fg_color,
-            background_color = RGB(0, 0, 0)
-    )
+    global fg_color = RGB(rand_red, rand_green, rand_blue)
 
-    # make lower border larger for use as wallpaper
-    scatter!([minimum(points_real)],
-            [minimum(points_imag) - 0.05],
-            color = RGB(0, 0, 0),
-            markersize = 0,
-            markerstrokewidth = 0
-    )
+    for i = 1:ni
+        for j = 1:nj
 
-    global long_ver_num = string("000000", ver_num)[end-5:end]
-    global filename = string("./plots/julia_set_", long_ver_num, ".png")
-    savefig(filename)
+            adj_red = x[i, j] * rand_red
+            adj_green = x[i, j] * rand_green
+            adj_blue = x[i, j] * rand_blue
+
+            f_x[i, j] = RGB{Float64}(adj_red, adj_green, adj_blue)
+        end
+    end
+
+    return f_x
+end
+
+
+
+function format_escape_times(escape_times)
+
+    f_escape_times = transpose(escape_times)
+    f_escape_times /= maximum(escape_times)
+    f_escape_times = format_color(f_escape_times)
+
+    return f_escape_times
+end
+
+
+
+function julia_plot(nx, ny, max_iter, long_ver_num, filename)
+
+    n_interesting_points = 0
+    nx_small = 90
+    ny_small = 90
+    max_iter_small = 100
+
+    while n_interesting_points <= nx_small * ny_small / 10
+        global c = get_c()
+        global r = get_r(c)
+        points, escape_times = init_points(nx_small, ny_small, r)
+        escape_times = iterate_points(points, escape_times, nx_small, ny_small, c, r, max_iter_small)
+        n_interesting_points = sum(max_iter_small / 4 .<= escape_times .<= 3 * max_iter_small / 4)
+    end
+
+    println("\nc = ", c)
+    points, escape_times = init_points(nx, ny, r)
+    escape_times = iterate_points(points, escape_times, nx, ny, c, r, max_iter)
+    n_interesting_points = sum(max_iter / 4 .<= escape_times .<= 3 * max_iter / 4)
+    println("Found ", n_interesting_points, " interesting points")
+
+    f_escape_times = format_escape_times(escape_times)
+
+    save(filename, f_escape_times)
 end
 
 
@@ -124,33 +174,22 @@ end
 
 
 
-function get_c_value()
-
-    c = 0
-    while (abs(c) > 2) | (abs(c) < 0.2)
-        c = 4*(-0.5 - 0.5 * im + rand() + rand() * im)
-    end
-
-    return c
-end
-
-
-max_iters = 100000000
-min_depth = 20
-max_depth = 50000
-max_deriv = 10000
-min_points = 500000
-
 println("Starting Julia set plot...")
-gr()
 
 # read version number
 io = open("data/vernum.txt", "r")
 ver_num = parse(Int, read(io, String))
 close(io)
 
+# format version number and filename
+long_ver_num = string("000000", ver_num)[end-5:end]
+filename = string("./plots/julia_set_", long_ver_num, ".png")
+
 # save plot
-plot_julia_set(max_iters, min_depth, max_depth, max_deriv, min_points, ver_num)
+const nx = 1500
+const ny = 1500
+const max_iter = 100
+julia_plot(nx, ny, max_iter, long_ver_num, filename)
 
 # copy to current version
 cp(filename, "./plots/julia_set.png", force = true)
