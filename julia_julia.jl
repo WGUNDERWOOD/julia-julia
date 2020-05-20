@@ -4,26 +4,27 @@ using Images
 
 function normalise(i, j, nx, ny, r)
 
-    x_scaling = 2 * r / nx
-    y_scaling = 2 * r / ny
-    scaling = max(x_scaling, y_scaling)
+    x_scaling::Float64 = 2 * r / nx
+    y_scaling::Float64 = 2 * r / ny
+    scaling::Float64 = max(x_scaling, y_scaling)
 
-    x_offset = scaling * nx / 2
-    y_offset = scaling * ny / 2
+    x_offset::Float64 = scaling * nx / 2
+    y_offset::Float64 = scaling * ny / 2
 
-    y_adjust = y_offset / 40
+    y_adjust::Float64 = y_offset / 40
 
-    x = i * scaling - x_offset
-    y = j * scaling - y_offset + y_adjust
+    x::Float64 = i * scaling - x_offset
+    y::Float64 = j * scaling - y_offset + y_adjust
+    z::Complex = x + im * y
 
-    return x + im * y
+    return z
 end
 
 
 
 function get_c()
 
-    c = 4 * (-0.5 - 0.5 * im + rand() + rand() * im)
+    c::Complex = 4 * (-0.5 - 0.5 * im + rand() + rand() * im)
 
     return c
 end
@@ -32,7 +33,7 @@ end
 
 function get_r(c)
 
-    r = 0.5 * (1 + sqrt(1 + 4 * abs(c)))
+    r::Float64 = 0.5 * (1 + sqrt(1 + 4 * abs(c)))
 
     return r
 end
@@ -47,7 +48,7 @@ function init_points(nx, ny, r)
     for i = 1:nx
         for j = 1:ny
 
-            z = normalise(i, j, nx, ny, r)
+            z::Complex = normalise(i, j, nx, ny, r)
             points[i, j] = z
 
             if abs(z) <= r
@@ -63,7 +64,7 @@ end
 
 
 
-function iterate_points(points, escape_times, nx, ny, c, r, max_iter)
+function iterate_points(points::Array{Complex}, escape_times::Array{Int}, nx, ny, c, r, max_iter)
 
     for i = 1:nx
         for j = 1:ny
@@ -71,7 +72,7 @@ function iterate_points(points, escape_times, nx, ny, c, r, max_iter)
             n = 1
             while n <= max_iter
 
-                z = points[i, j]
+                z::Complex = points[i, j]
 
                 if abs(z) <= r
                     points[i, j] = z^2 + c
@@ -89,6 +90,34 @@ function iterate_points(points, escape_times, nx, ny, c, r, max_iter)
         end
     end
     return escape_times
+end
+
+
+
+function curve_values(vals, x, y)
+
+    ni = size(vals)[1]
+    nj = size(vals)[2]
+    c_x = Array{Float64}(undef, ni, nj)
+
+    xv = x * maximum(vals)
+    yv = x * maximum(vals)
+
+    m1 = y / x
+    m2 = (1-y) / (1-x)
+
+    for i = 1:ni
+        for j = 1:nj
+
+            if vals[i, j] <= xv
+                c_x[i, j] = m1 * vals[i, j]
+            else
+                c_x[i, j] = m2 * (vals[i, j] - xv) + yv
+            end
+        end
+    end
+
+    return c_x
 end
 
 
@@ -124,7 +153,8 @@ end
 function format_escape_times(escape_times)
 
     f_escape_times = transpose(escape_times)
-    f_escape_times /= maximum(escape_times)
+    f_escape_times = curve_values(f_escape_times, 0.5, 0.9)
+    f_escape_times /= maximum(f_escape_times)
     f_escape_times = format_color(f_escape_times)
 
     return f_escape_times
@@ -139,6 +169,7 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     ny_small = 90
     max_iter_small = 100
 
+    println("Finding a good value for c...")
     while n_interesting_points <= nx_small * ny_small / 10
         global c = get_c()
         global r = get_r(c)
@@ -150,7 +181,7 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     println("\nc = ", c)
     points, escape_times = init_points(nx, ny, r)
     escape_times = iterate_points(points, escape_times, nx, ny, c, r, max_iter)
-    n_interesting_points = sum(max_iter / 4 .<= escape_times .<= 3 * max_iter / 4)
+    n_interesting_points = sum(max_iter / 10 .<= escape_times .<= 9 * max_iter / 10)
     println("\nFound ", n_interesting_points," / ", nx * ny, " interesting points")
 
     f_escape_times = format_escape_times(escape_times)
@@ -198,7 +229,7 @@ filename = string("./plots/julia_set_", long_ver_num, ".png")
 # save plot
 const nx = 2560
 const ny = 1440
-const max_iter = 200
+const max_iter = 500
 julia_plot(nx, ny, max_iter, long_ver_num, filename)
 
 # copy to current version
@@ -217,4 +248,4 @@ io = open("data/color.txt", "w")
 println(io, col_string)
 close(io)
 
-println("Finished Julia set plot.")
+println("Finished Julia set plot")
