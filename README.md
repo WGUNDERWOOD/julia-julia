@@ -24,7 +24,7 @@ to avoid returning uninteresting plots.
 This is then plotted at full resolution.
 
 The output images are saved as high-resolution PNGs in the
-plots directory,
+`plots` directory,
 alongside copies annotated with their parameter values.
 
 The first time the script is run, it will be very slow while
@@ -44,7 +44,7 @@ bash build.sh
 ## Dependencies
 
 - Julia
-  - Julia Images library
+  - Julia "Images" library
 - pdflatex
 - pdfcrop
 - ImageMagick
