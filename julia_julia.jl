@@ -43,19 +43,15 @@ end
 function init_points(nx, ny, r)
 
     points = Array{Complex}(undef, nx, ny)
-    escape_times = Array{Int}(undef, nx, ny)
+    escape_times = Array{Float64}(undef, nx, ny)
 
     for i = 1:nx
         for j = 1:ny
 
             z::Complex = normalise(i, j, nx, ny, r)
             points[i, j] = z
+            escape_times[i, j] = max_iter
 
-            if abs(z) <= r
-                escape_times[i, j] = max_iter
-            else
-                escape_times[i, j] = 0
-            end
         end
     end
 
@@ -64,7 +60,7 @@ end
 
 
 
-function iterate_points(points::Array{Complex}, escape_times::Array{Int}, nx, ny, c, r, max_iter)
+function iterate_points(points::Array{Complex}, escape_times::Array{Float64}, nx, ny, c, r, max_iter)
 
     for i = 1:nx
         for j = 1:ny
@@ -73,11 +69,12 @@ function iterate_points(points::Array{Complex}, escape_times::Array{Int}, nx, ny
             while n <= max_iter
 
                 z::Complex = points[i, j]
+                a::Float64 = abs(z)
 
-                if abs(z) <= r
+                if a <= r
                     points[i, j] = z^2 + c
                 else
-                    escape_times[i, j] = n
+                    escape_times[i, j] = n - 1 + exp(-(a - r))
                     break
                 end
 
@@ -159,15 +156,15 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     n_interesting_points = 0
     nx_small = 90
     ny_small = 90
-    max_iter_small = 100
+    max_iter_small = 1000
 
     println("Finding a good value for c...")
-    while n_interesting_points <= nx_small * ny_small / 20
+    while n_interesting_points <= nx_small * ny_small / 100
         global c = get_c()
         global r = get_r(c)
         points, escape_times = init_points(nx_small, ny_small, r)
         escape_times = iterate_points(points, escape_times, nx_small, ny_small, c, r, max_iter_small)
-        n_interesting_points = sum(max_iter_small / 4 .<= escape_times .<= 3 * max_iter_small / 4)
+        n_interesting_points = sum(max_iter_small / 10 .<= escape_times .<= 9 * max_iter_small / 10)
     end
 
     println("\nc = ", c)
