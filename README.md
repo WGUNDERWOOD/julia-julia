@@ -44,6 +44,7 @@ bash build.sh
 ## Dependencies
 
 - Julia
+  - Julia Images library
 - pdflatex
 - pdfcrop
 - ImageMagick
