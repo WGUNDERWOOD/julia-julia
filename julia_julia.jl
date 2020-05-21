@@ -145,7 +145,7 @@ end
 function format_escape_times(escape_times)
 
     f_escape_times = transpose(escape_times)
-    f_escape_times = curve_values(f_escape_times, 2)
+    f_escape_times = curve_values(f_escape_times, 1.7)
     f_escape_times /= maximum(f_escape_times)
     f_escape_times = format_color(f_escape_times)
 
