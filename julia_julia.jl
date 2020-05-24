@@ -117,9 +117,16 @@ function format_color(x)
     nj = size(x)[2]
     f_x = Array{RGB{Float64}}(undef, ni, nj)
 
-    rand_red = 0.4 * rand() + 0.4
-    rand_green = 0.4 * rand() + 0.4
-    rand_blue = 0.4 * rand() + 0.4
+    rand_red = rand()
+    rand_green = rand()
+    rand_blue = rand()
+
+    col_mean = (rand_red + rand_green + rand_blue) / 3
+    col_scale = 1.0 / col_mean
+
+    rand_red = min(1, rand_red * col_scale)
+    rand_green = min(1, rand_green * col_scale)
+    rand_blue = min(1, rand_blue * col_scale)
 
     global fg_color = RGB(rand_red, rand_green, rand_blue)
 
