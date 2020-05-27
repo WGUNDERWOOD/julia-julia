@@ -91,6 +91,21 @@ end
 
 
 
+function check_c_interesting(c, lbound, ubound, interesting_max_iter)
+
+    z::Complex = 0
+
+    n = 1
+    while n <= interesting_max_iter
+        z = z^2 + c
+        n += 1
+    end
+
+    return ((abs(z) >= lbound) & (abs(z) <= ubound))
+end
+
+
+
 function curve_values(vals, l)
 
     ni = size(vals)[1]
@@ -160,26 +175,22 @@ end
 
 function julia_plot(nx, ny, max_iter, long_ver_num, filename)
 
-    n_interesting_points = 0
-    nx_small = 90
-    ny_small = 90
-    max_iter_small = 1000
+    interesting_max_iter = 100
+    ubound = 5
+    lbound = 2
+    interesting = false
 
     println("Finding a good value for c...")
-    while n_interesting_points <= nx_small * ny_small / 100
+    while !interesting
         global c = get_c()
-        global r = get_r(c)
-        points, escape_times = init_points(nx_small, ny_small, r)
-        escape_times = iterate_points(points, escape_times, nx_small, ny_small, c, r, max_iter_small)
-        n_interesting_points = sum(max_iter_small / 10 .<= escape_times .<= 9 * max_iter_small / 10)
+        println("Trying c = ", round(c, digits = 3)," ...")
+        interesting = check_c_interesting(c, lbound, ubound, interesting_max_iter)
     end
 
-    println("\nc = ", c)
+    println("\nUsing c = ", round(c, digits = 3))
+    r = get_r(c)
     points, escape_times = init_points(nx, ny, r)
     escape_times = iterate_points(points, escape_times, nx, ny, c, r, max_iter)
-    n_interesting_points = sum(max_iter / 10 .<= escape_times .<= 9 * max_iter / 10)
-    println("\nFound ", n_interesting_points," / ", nx * ny, " interesting points")
-
     f_escape_times = format_escape_times(escape_times)
 
     println("Saving image file...")
