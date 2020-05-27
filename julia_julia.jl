@@ -137,7 +137,7 @@ function format_color(x)
     rand_blue = rand()
 
     col_mean = (rand_red + rand_green + rand_blue) / 3
-    col_scale = 1.0 / col_mean
+    col_scale = 1.5 / col_mean
 
     rand_red = min(1, rand_red * col_scale)
     rand_green = min(1, rand_green * col_scale)
