@@ -174,7 +174,7 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     while !interesting
         global c = get_c()
         interesting = check_c_interesting(c, lbound, ubound, interesting_max_iter)
-        print("Tried ", ntries, " values...          \r")
+        print("Tried ", ntries, " values for c...          \r")
         ntries += 1
     end
     print("\n")
