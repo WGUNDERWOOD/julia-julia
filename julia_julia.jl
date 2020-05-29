@@ -82,10 +82,10 @@ function iterate_points(points::Array{Complex}, escape_times::Array{Float64}, nx
             end
         end
 
-        if (i % 100 == 0)
-            println("Rendered ", i, " of ", nx, " lines...")
-        end
+        print("Rendered ", i, " of ", nx, " lines...                    \r")
     end
+    print("\n")
+
     return escape_times
 end
 
@@ -130,29 +130,18 @@ function format_color(x)
 
     ni = size(x)[1]
     nj = size(x)[2]
-    f_x = Array{RGB{Float64}}(undef, ni, nj)
+    f_x = Array{HSL{Float64}}(undef, ni, nj)
 
-    rand_red = rand()
-    rand_green = rand()
-    rand_blue = rand()
+    h = rand() * 360
+    s = 0.3
+    l = 0.8
 
-    col_mean = (rand_red + rand_green + rand_blue) / 3
-    col_scale = 1.5 / col_mean
-
-    rand_red = min(1, rand_red * col_scale)
-    rand_green = min(1, rand_green * col_scale)
-    rand_blue = min(1, rand_blue * col_scale)
-
-    global fg_color = RGB(rand_red, rand_green, rand_blue)
+    global fg_color = HSL(h, s, 0.7 * l)
 
     for i = 1:ni
         for j = 1:nj
-
-            adj_red = x[i, j] * rand_red
-            adj_green = x[i, j] * rand_green
-            adj_blue = x[i, j] * rand_blue
-
-            f_x[i, j] = RGB{Float64}(adj_red, adj_green, adj_blue)
+            lij = x[i, j] * l
+            f_x[i, j] = HSL{Float64}(h, s, lij)
         end
     end
 
@@ -181,13 +170,16 @@ function julia_plot(nx, ny, max_iter, long_ver_num, filename)
     interesting = false
 
     println("Finding a good value for c...")
+    ntries = 1
     while !interesting
         global c = get_c()
-        println("Trying c = ", round(c, digits = 3)," ...")
         interesting = check_c_interesting(c, lbound, ubound, interesting_max_iter)
+        print("Tried ", ntries, " values...          \r")
+        ntries += 1
     end
+    print("\n")
 
-    println("\nUsing c = ", round(c, digits = 3))
+    println("Using c = ", round(c, digits = 3))
     r = get_r(c)
     points, escape_times = init_points(nx, ny, r)
     escape_times = iterate_points(points, escape_times, nx, ny, c, r, max_iter)
@@ -250,6 +242,7 @@ close(io)
 
 # save color
 col_string = hex(fg_color, :rrggbb)
+println("Color: #", col_string)
 col_string = string("\\definecolor{fgcolor}{HTML}{", col_string, "}")
 io = open("data/color.txt", "w")
 println(io, col_string)
