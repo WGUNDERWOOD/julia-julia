@@ -27,14 +27,14 @@ convert -density 1000 -resize 2560x1440\! julia_annotated.pdf ../plots/julia_ann
 
 
 # Copy annotated version to numbered file
-echo "Copying files..."
-cd ../plots
-while read -r line; do
-    ver_num="$line"
-done < "../data/vernum.txt"
-long_ver_num="000000${ver_num}"
-long_ver_num=${long_ver_num: -6}
-cp julia_annotated.png julia_annotated_${long_ver_num}.png
+#echo "Copying files..."
+#cd ../plots
+#while read -r line; do
+    #ver_num="$line"
+#done < "../data/vernum.txt"
+#long_ver_num="000000${ver_num}"
+#long_ver_num=${long_ver_num: -6}
+#cp julia_annotated.png julia_annotated_${long_ver_num}.png
 
 
 # Update version number

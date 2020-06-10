@@ -126,15 +126,40 @@ end
 
 
 
+function rand_color()
+
+    colors_list = [
+        "#8bc9ed",
+        "#50fa7b",
+        "#ffb87c",
+        "#ef89c6",
+        "#bdb3f9",
+        "#ff7777",
+        "#d1da8c"
+    ]
+
+    color_hex = rand(colors_list)
+    color_hsl = parse(HSL{Float64}, color_hex)
+
+    h = color_hsl.h
+    s = color_hsl.s
+    l = color_hsl.l
+
+    return [h, s, l]
+end
+
+
+
 function format_color(x)
 
     ni = size(x)[1]
     nj = size(x)[2]
     f_x = Array{HSL{Float64}}(undef, ni, nj)
 
-    h = rand() * 360
-    s = 0.3
-    l = 0.8
+    color_hsl = rand_color()
+    h = color_hsl[1]
+    s = color_hsl[2]
+    l = color_hsl[3]
 
     global fg_color = HSL(h, s, 0.7 * l)
 
@@ -162,7 +187,7 @@ end
 
 
 
-function julia_plot(nx, ny, max_iter, long_ver_num, filename)
+function julia_plot(nx, ny, max_iter, ver_num, filename)
 
     interesting_max_iter = 100
     ubound = 5
@@ -222,17 +247,18 @@ ver_num = parse(Int, read(io, String))
 close(io)
 
 # format version number and filename
-long_ver_num = string("000000", ver_num)[end-5:end]
-filename = string("./plots/julia_set_", long_ver_num, ".png")
+#long_ver_num = string("000000", ver_num)[end-5:end]
+#filename = string("./plots/julia_set_", long_ver_num, ".png")
+filename = "./plots/julia_set.png"
 
 # save plot
 const nx = 2560
 const ny = 1440
 const max_iter = 1000
-julia_plot(nx, ny, max_iter, long_ver_num, filename)
+julia_plot(nx, ny, max_iter, ver_num, filename)
 
 # copy to current version
-cp(filename, "./plots/julia_set.png", force = true)
+#cp(filename, "./plots/julia_set.png", force = true)
 
 # save c parameter
 c_label = format_latex(c)
