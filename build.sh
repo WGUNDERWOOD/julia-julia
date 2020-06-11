@@ -26,15 +26,11 @@ pdfcrop julia_annotated.pdf julia_annotated.pdf > /dev/null 2>&1
 convert -density 1000 -resize 2560x1440\! julia_annotated.pdf ../plots/julia_annotated.png
 
 
-# Copy annotated version to numbered file
-#echo "Copying files..."
-#cd ../plots
-#while read -r line; do
-    #ver_num="$line"
-#done < "../data/vernum.txt"
-#long_ver_num="000000${ver_num}"
-#long_ver_num=${long_ver_num: -6}
-#cp julia_annotated.png julia_annotated_${long_ver_num}.png
+# Read version number
+cd ../plots
+while read -r line; do
+    ver_num="$line"
+done < "../data/vernum.txt"
 
 
 # Update version number

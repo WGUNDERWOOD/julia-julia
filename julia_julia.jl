@@ -129,13 +129,14 @@ end
 function rand_color()
 
     colors_list = [
-        "#8bc9ed",
-        "#50fa7b",
-        "#ffb87c",
-        "#ef89c6",
-        "#bdb3f9",
-        "#ff7777",
-        "#d1da8c"
+        "#9bd9fd",
+        "#90fabb",
+        "#efd89c",
+        "#efb9f6",
+        "#edd3ff",
+        "#eeaaaa",
+        "#fff7cc",
+        "#eeeedd"
     ]
 
     color_hex = rand(colors_list)
@@ -239,28 +240,22 @@ end
 
 
 
-println("Starting Julia set plot...")
 
 # read version number
+println("Reading current version number...")
 io = open("data/vernum.txt", "r")
 ver_num = parse(Int, read(io, String))
 close(io)
 
-# format version number and filename
-#long_ver_num = string("000000", ver_num)[end-5:end]
-#filename = string("./plots/julia_set_", long_ver_num, ".png")
-filename = "./plots/julia_set.png"
-
 # save plot
+println("Starting Julia set plot...")
 const nx = 2560
 const ny = 1440
 const max_iter = 1000
-julia_plot(nx, ny, max_iter, ver_num, filename)
-
-# copy to current version
-#cp(filename, "./plots/julia_set.png", force = true)
+julia_plot(nx, ny, max_iter, ver_num, "./plots/julia_set.png")
 
 # save c parameter
+println("Saving c value...")
 c_label = format_latex(c)
 io = open("data/c.txt", "w")
 println(io, c_label)
@@ -268,10 +263,8 @@ close(io)
 
 # save color
 col_string = hex(fg_color, :rrggbb)
-println("Color: #", col_string)
+println("Saving color (#", col_string, ")...")
 col_string = string("\\definecolor{fgcolor}{HTML}{", col_string, "}")
 io = open("data/color.txt", "w")
 println(io, col_string)
 close(io)
-
-println("Finished Julia set plot")
