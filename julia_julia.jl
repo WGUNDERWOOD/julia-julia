@@ -129,14 +129,13 @@ end
 function rand_color()
 
     colors_list = [
-        "#9bd9fd",
-        "#90fabb",
-        "#efd89c",
-        "#efb9f6",
-        "#edd3ff",
-        "#eeaaaa",
-        "#fff7cc",
-        "#eeeedd"
+        "#a0e6ff",
+        "#a0e5bb",
+        "#f7d9ee",
+        "#f2e8ff",
+        "#eec8c8",
+        "#f3f7cc",
+        "#eeeeee"
     ]
 
     color_hex = rand(colors_list)
@@ -162,7 +161,7 @@ function format_color(x)
     s = color_hsl[2]
     l = color_hsl[3]
 
-    global fg_color = HSL(h, s, 0.7 * l)
+    global fg_color = HSL(h, s, 0.6 * l)
 
     for i = 1:ni
         for j = 1:nj
