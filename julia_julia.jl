@@ -129,13 +129,13 @@ end
 function rand_color()
 
     colors_list = [
-        "#a0e6ff",
-        "#a0e5bb",
-        "#f7d9ee",
-        "#f2e8ff",
-        "#eec8c8",
-        "#f3f7cc",
-        "#eeeeee"
+        "#a8edff", # blue
+        "#a0e5bb", # green
+        "#f7d9ee", # pink
+        "#f7f1ff", # purple
+        "#eec8c8", # red
+        "#f3f1cc", # yellow
+        "#f8f7f7"  # gray
     ]
 
     color_hex = rand(colors_list)
