@@ -131,8 +131,8 @@ function rand_color()
     colors_list = [
         "#a8edff", # blue
         "#a0e5bb", # green
-        "#f7d9ee", # pink
-        "#f7f1ff", # purple
+        "#ffdaf3", # pink
+        "#f7edfb", # purple
         "#eec8c8", # red
         "#f3f1cc", # yellow
         "#f8f7f7"  # gray
