@@ -11,7 +11,7 @@ mkdir -p data
 # Run Julia script
 if [ -f "sys_plots.so" ]; then
     echo "Using Julia sysimage for fast plotting..."
-    julia --sysimage sys_plots.so julia_julia.jl
+    julia --threads 12 --sysimage sys_plots.so julia_julia.jl
 else
     echo "No Julia sysimage found. Recompiling..."
     julia compile.jl

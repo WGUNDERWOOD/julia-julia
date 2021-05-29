@@ -62,7 +62,7 @@ end
 
 function iterate_points(points::Array{Complex}, escape_times::Array{Float64}, nx, ny, c, r, max_iter)
 
-    for i = 1:nx
+    Threads.@threads for i = 1:nx
         for j = 1:ny
 
             n = 1
@@ -250,7 +250,7 @@ close(io)
 println("Starting Julia set plot...")
 const nx = 2560
 const ny = 1440
-const max_iter = 1000
+const max_iter = 2000
 julia_plot(nx, ny, max_iter, ver_num, "./plots/julia_set.png")
 
 # save c parameter
