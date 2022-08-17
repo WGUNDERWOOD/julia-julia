@@ -9,4 +9,4 @@ bash ./build.sh
 echo "Setting wallpaper..."
 cp ./plots/julia_annotated.png /usr/local/share/wallpapers/wallpaper.png
 sleep 1
-bash ~/scripts/set-wallpaper
+bash ~/scripts/set_wallpaper
